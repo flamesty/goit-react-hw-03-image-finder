@@ -1,70 +1,74 @@
-# Getting Started with Create React App
+react-35-module-3
+ProductList.js
+создаем компонент ProductList ({produsts, onDeleteProduct}) принимаем массив и в переборе создаем элементы продуктов
+импортируем компонент RemoveItem и используем в качестве кнопки, которая принимает проп onDeleteProduct и id продукта, и передает их ребенку GadgetWindow для кнопки виджета Delete;
+App.js
+создаем публичный метод удаления продукта;
+deleteProduct = id =>
+this.setState(prev => ({
+allProducts: prev.allProducts.filter(prod => prod.id !== id),
+}));
+импортируем и рендерим компонент ProductList, передаем ему список продуктов и метод удаления продукта через пропсы;
+RemoveItem.js
+в компоненте DeleteButton создаем публичный метод handleDelete, в котором вызываем полученный через пропс onDelete и передаем ему полученный id продукта;
+в рендер GadgetWindow деструктуризируем и передаем метод handleDelete;
+WindowElem.js
+в компоненте GadgetWindow получаем handleDelete через пропс и отдаем в onClick для deleteBtn
+Modal.js
+создаем классовый компонент модального окна:
+в index.html добавим портал для модалки
+<div id="modal-root"></div>
+в App.js добавляем свойство стейта для контроля модального окна - showModal и публичный метод открытия/закрытия модального окна
+toggleModal = () => {
+this.setState(({ showModal }) => ({
+showModal: !showModal,
+}));
+};
+рендерим модальное окно
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+импортируем import { createPortal } from 'react-dom'
+создаем компонент модального окна с рендером разметки:
+return createPortal(
+<div className={s.backDrop} onClick={handleClose}>
+<div className={s.content}>{children}</div>
+</div>,
+document.getElementById('modal-root'),
+)
+прописываем метод закрытия по Escape - handleEscape;
+в CDM вешаем слушателя на window по keydown;
+в CWU снимаем слушателя на window по keydown;
+прописываем метод handleClose для onClick в div className="backdrop"
+import { Component } from 'react';
+import { createPortal } from 'react-dom';
+import './Modal.module.scss';
 
-## Available Scripts
+export class Modal extends Component {
+componentDidMount() {
+window.addEventListener('keydown', this.handleEscape);
+}
 
-In the project directory, you can run:
+componentWillUnmount() {
+window.removeEventListener('keydown', this.handleEscape);
+}
 
-### `yarn start`
+handleEscape = e => {
+if (e.code === 'Escape') {
+this.props.onClose();
+}
+};
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+handleClose = e => {
+if (e.currentTarget === e.target) {
+this.props.onClose();
+}
+};
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+render() {
+return createPortal(
+<div className="backdrop" onClick={this.handleClose}>
+<div className="content">{this.props.children}</div>
+</div>,
+document.querySelector('#modal-root'),
+);
+}
+}
