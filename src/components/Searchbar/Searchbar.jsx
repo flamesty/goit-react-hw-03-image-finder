@@ -1,15 +1,23 @@
-import React, { Component } from "react";
-import propTypes from "prop-types";
+import { Component } from 'react';
 
 class Searchbar extends Component {
-  static propTypes = { onSubmit: propTypes.func };
+  state = {
+    value: '',
+  };
+
+  changeHandler = (e) => {
+    this.setState({ value: e.target.value });
+  };
+
+  submitHandler = (e) => {
+    e.preventDefault();
+    this.props.onSubmit(this.state.value.trim());
+  };
+
   render() {
     return (
       <header className="Searchbar">
-        <form
-          className="SearchForm"
-          onSubmit={(event) => this.props.onSubmit(event)}
-        >
+        <form className="SearchForm" onSubmit={this.submitHandler}>
           <button type="submit" className="SearchForm-button">
             <span className="SearchForm-button-label">Search</span>
           </button>
@@ -20,6 +28,8 @@ class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
+            onChange={this.changeHandler}
+            value={this.state.value}
           />
         </form>
       </header>
